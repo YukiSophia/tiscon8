@@ -62,6 +62,12 @@
           <input type="text" id="newAddress" name="newAddress" th:field="*{newAddress}" class="form-control"
                  value="札幌市南区1"/ required>
         </div>
+        <div class="form-group">
+          <label for="newMonths">引越し予定月</label>
+          <select id="MonthsId" name="MonthsId" class="form-control">
+            <option th:each="Months : ${Monthslist}" th:value="${Months.MonthsId}" th:field="*{MonthsId}">[[${Months.MonthsName}]]</option>
+          </select>
+        </div>
       </fieldset>
       <fieldset>
       <div class="sub-title">お荷物情報</div>

@@ -74,6 +74,13 @@
           <td><span th:text="*{newAddress}"></span></td>
           <input type="hidden" name="newAddress" id="newAddress" th:value="*{newAddress}"/>
         </tr>
+        <tr>
+          <th>引越し予定月</th>
+          <td>
+            <span th:each="Months : ${Monthslist}" th:text="${Months.MonthsName}" th:if="${Months.MonthsId}==*{MonthsId}">東京</span>
+          </td>
+          <input type="hidden" name="MonthsId" id="MonthsId" th:value="*{MonthsId}"/>
+        </tr>
         </tbody>
       </table>
       <div class="sub-title">お荷物情報</div>

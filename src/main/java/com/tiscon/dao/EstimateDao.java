@@ -175,4 +175,15 @@ public class EstimateDao {
         SqlParameterSource paramSource = new MapSqlParameterSource("serviceId", serviceId);
         return parameterJdbcTemplate.queryForObject(sql, paramSource, Integer.class);
     }
+
+    /**
+     * 月テーブルに登録されているすべての月を取得する。
+     *
+     * @return すべての月
+     */
+    public List<Months> getAllMonths() {
+        String sql = "SELECT MONTHS_ID, MONTHS_NAME FROM MONTHS";
+        return parameterJdbcTemplate.query(sql,
+                BeanPropertyRowMapper.newInstance(Months.class));
+    }
 }
