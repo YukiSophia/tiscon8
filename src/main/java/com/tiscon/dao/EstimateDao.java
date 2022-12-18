@@ -96,6 +96,9 @@ public class EstimateDao {
                 "SELECT PREFECTURE_ID_TO PREFECTURE_ID_FROM ,PREFECTURE_ID_FROM PREFECTURE_ID_TO ,DISTANCE FROM PREFECTURE_DISTANCE) " +
                 "WHERE PREFECTURE_ID_FROM  = :prefectureIdFrom AND PREFECTURE_ID_TO  = :prefectureIdTo";
 
+        if(prefectureIdFrom.equals(prefectureIdTo)){
+            sql = "SELECT DISTANCE FROM PREFECTURE_DISTANCE WHERE PREFECTURE_ID_FROM  = :prefectureIdFrom AND PREFECTURE_ID_TO  = :prefectureIdTo";
+        }
         PrefectureDistance prefectureDistance = new PrefectureDistance();
         prefectureDistance.setPrefectureIdFrom(prefectureIdFrom);
         prefectureDistance.setPrefectureIdTo(prefectureIdTo);
@@ -129,10 +132,35 @@ public class EstimateDao {
      * @return 料金[円]
      */
     public int getPricePerTruck(int boxNum) {
-        String sql = "SELECT PRICE FROM TRUCK_CAPACITY WHERE MAX_BOX >= :boxNum ORDER BY PRICE LIMIT 1";
 
+        String two_max_box_sql = "SELECT MAX_BOX FROM TRUCK_CAPACITY WHERE TRUCK_ID = 1";
+        SqlParameterSource paramSource_two = new MapSqlParameterSource("boxNum", boxNum);
+        int two_max_box_num = parameterJdbcTemplate.queryForObject(two_max_box_sql, paramSource_two, Integer.class);
+
+        String four_max_box_sql = "SELECT MAX_BOX FROM TRUCK_CAPACITY WHERE TRUCK_ID = 2";
+        int four_max_box_num = parameterJdbcTemplate.queryForObject(four_max_box_sql, paramSource_two, Integer.class);
+
+        int two_num = 0;
+        int four_num = 0;
+        int temp = 0;
+
+        four_num = boxNum / four_max_box_num;
+        temp = boxNum % four_max_box_num;
+        if(temp>two_max_box_num){four_num++;}
+        else{two_num++;}
+
+        String sql = "SELECT PRICE FROM TRUCK_CAPACITY WHERE TRUCK_ID = 1";
         SqlParameterSource paramSource = new MapSqlParameterSource("boxNum", boxNum);
-        return parameterJdbcTemplate.queryForObject(sql, paramSource, Integer.class);
+        int two_price =  parameterJdbcTemplate.queryForObject(sql, paramSource, Integer.class) * two_num;
+        sql = "SELECT PRICE FROM TRUCK_CAPACITY WHERE TRUCK_ID = 2";
+        int four_price =  parameterJdbcTemplate.queryForObject(sql, paramSource, Integer.class) * four_num;
+
+        return two_price + four_price;
+
+        // String sql = "SELECT PRICE FROM TRUCK_CAPACITY WHERE MAX_BOX >= :boxNum ORDER BY PRICE LIMIT 1";
+
+        // SqlParameterSource paramSource = new MapSqlParameterSource("boxNum", boxNum);
+        // return parameterJdbcTemplate.queryForObject(sql, paramSource, Integer.class);
     }
 
     /**
